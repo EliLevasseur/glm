@@ -10,7 +10,7 @@ TrainingWindows buildWindows(const std::vector<std::uint32_t>& tokens) {
 	std::vector<std::vector<std::uint32_t>> inputs;
 	std::vector<std::uint32_t> window;
 
-	// the 8 tokens before targetIndex predict the token at targetIndex
+	// the context tokens before targetIndex predict the token at targetIndex
 	while (targetIndex < tokens.size()) {
 		window.clear();
 		for (std::size_t i = windowStart; i < targetIndex; i++) {
@@ -21,8 +21,5 @@ TrainingWindows buildWindows(const std::vector<std::uint32_t>& tokens) {
 		targetIndex++;
 		windowStart++;
 	}
-	TrainingWindows out;
-	out.targets = std::move(targets);
-	out.inputs = std::move(inputs);
-	return out;
+	return TrainingWindows{std::move(targets), std::move(inputs)};
 }
