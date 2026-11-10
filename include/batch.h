@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -12,3 +13,5 @@ struct Batch {
 };
 
 Batch windowToBatch(const TrainingWindows& windows);
+// only the windows at windowIndices, in that order
+Batch windowToBatch(const TrainingWindows& windows, const std::vector<std::size_t>& windowIndices);

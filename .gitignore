@@ -1,0 +1,6 @@
+build/
+a.out
+build/CMakeCache.txt build/CMakeFiles build/cmake_install.cmake build/glm build/libglm_core.a build/Makefile
+build/*
+checkpoints/
+data/tinystories.txt
