@@ -72,7 +72,7 @@ enough text for it to learn much past short common words.
 ## Building
 
 ```bash
-git clone https://github.com/EliLevasseur/LLM.git glm
+git clone https://github.com/EliLevasseur/glm.git
 cd glm
 cmake -S . -B build
 cmake --build build
