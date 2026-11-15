@@ -15,7 +15,7 @@ endif()
 # Use an installed nnet if CMake can find one, otherwise download it from GitHub
 # and build it here. To build against a local clone instead, configure with
 # -DFETCHCONTENT_SOURCE_DIR_NNET=/path/to/neural-network
-set(GLM_NNET_VERSION "main" CACHE STRING "nnet branch, tag or commit to download")
+set(GLM_NNET_VERSION "v0.2.0" CACHE STRING "nnet branch, tag or commit to download")
 find_package(nnet CONFIG QUIET)
 if(nnet_FOUND)
 	message(STATUS "Using the installed nnet in ${nnet_DIR}")
