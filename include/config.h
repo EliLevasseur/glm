@@ -16,6 +16,7 @@ namespace config {
 	inline constexpr std::size_t contextSize = 32;      // characters the model sees at once
 	inline constexpr std::size_t embeddingSize = 16;    // learned numbers per character
 	inline constexpr std::size_t hiddenSize = 128;
+	inline constexpr std::size_t hiddenSize2 = 64;
 	inline constexpr std::size_t vocabularySize = 256;  // one slot per byte value
 
 	// training

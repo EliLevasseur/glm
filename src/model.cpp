@@ -12,6 +12,7 @@ std::unique_ptr<nnet::Sequential> buildModel(std::mt19937& weightGenerator) {
 	// the embedding turns each window of ids into contextSize * embeddingSize numbers
 	const std::size_t inputSize = config::contextSize * config::embeddingSize;
 	const std::size_t hiddenSize = config::hiddenSize;
+	const std::size_t hiddenSize2 = config::hiddenSize2;
 	const std::size_t outputSize = config::vocabularySize;
 
 	std::vector<std::unique_ptr<nnet::Unary_Module>> components;
@@ -20,7 +21,9 @@ std::unique_ptr<nnet::Sequential> buildModel(std::mt19937& weightGenerator) {
 	components.push_back(std::make_unique<nnet::Embedding>(config::vocabularySize, config::embeddingSize, weightGenerator));
 	components.push_back(std::make_unique<nnet::Dense>(inputSize, hiddenSize, weightGenerator));
 	components.push_back(std::make_unique<nnet::ReLU>());
-	components.push_back(std::make_unique<nnet::Dense>(hiddenSize, outputSize, weightGenerator));
+	components.push_back(std::make_unique<nnet::Dense>(hiddenSize, hiddenSize2, weightGenerator));
+	components.push_back(std::make_unique<nnet::ReLU>());
+	components.push_back(std::make_unique<nnet::Dense>(hiddenSize2, outputSize, weightGenerator));
 
 	return std::make_unique<nnet::Sequential>(std::move(components));
 }

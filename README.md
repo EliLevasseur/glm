@@ -37,7 +37,7 @@ so the 22.5 MB file doesn't turn into gigabytes of copies.
 The model is
 
 ```text
-Embedding(256, 16) -> Dense(512, 128) -> ReLU -> Dense(128, 256)
+Embedding(256, 16) -> Dense(512, 128) -> ReLU -> Dense(128, 64) -> ReLU -> Dense(64, 256)
 ```
 
 trained with softmax cross-entropy and Adam. The embedding gives every byte its
@@ -49,25 +49,38 @@ is the one that gets saved.
 To write text it takes a prompt, predicts how likely each next byte is, samples
 one with a temperature of 0.6, adds it to the end, and slides the window forward.
 
-## Results so far
+## Results (v1)
 
-On TinyStories the validation loss got to 1.20 per character by epoch 6,
-with training loss right next to it at 1.18. A sample from that run:
+v1 is the model above, with two hidden layers and about 95,000 parameters. Its
+best validation loss on TinyStories is 1.125 per character. With one hidden
+layer it got to 1.20 on the same data, even with slightly more parameters
+(about 103,000). Before TinyStories I trained on Alice's Adventures in
+Wonderland alone, which only got to 1.78 because one book isn't enough text.
+
+My goal for v1 was that most of 10 samples from "Once upon a time, there was a
+little" continue with real words and a short grammatical sentence and all 10 did,
+Here are three samples from the v1 checkpoint, each cut off at the end of a sentence:
 
 ```text
-The rabbit hopped over the grass to eat the carror. She goats were named Tim
-went to the town. He wanted to show it and a prettyon for herming and g
+Once upon a time, there was a little bird named Amy. He looked again. She saw a big sad.
+Once upon a time, there was a little boy named Tim. He loved to climb it too. They saw she was sad and play.
+Once upon a time, there was a little boy named Tim. Tim was sad and her everyone were tree.
 ```
 
-Most of the words are real now (A lot better compared to my last model trained on `alice.txt`and) some sentences hold together. Training and
-validation loss being so close means the model isn't memorizing, it's just full,
-so a bigger model should help. It also only sees 32 characters back, so it loses
-track of what a sentence was about after a few words. That's the main thing a
-transformer should fix.
+### What it can't do yet
 
-Before TinyStories I trained it on Alice's Adventures in Wonderland alone. It only
-got to 1.78 and started memorizing after a few epochs, because one book isn't
-enough text for it to learn much past short common words.
+Every sample falls apart in its second sentence. The model has the opening
+down, but after it the model strings together common pieces like "was sad"
+without making them into a sentence.
+It also loses track of who it's talking about: Amy turns into "He" and then
+"She" while her name is still inside its 32-character window, so that's
+something the model hasn't learned yet, not something it can't see.
+
+The window is the other limit. Anything more than about six words back is
+invisible to it, so it can't stay with one character or a plot for a whole
+story, and a question with its answer wouldn't fit. Letting this kind of model
+see further means a bigger first layer that learns every position separately,
+which is why a transformer comes next.
 
 ## Building
 
@@ -94,6 +107,16 @@ Each run starts a fresh model and saves its best epoch as the next numbered file
 in `checkpoints/`. When you give it several books, it prints the validation loss
 on every book from that run after each one, so you can see how much it forgets
 the earlier books.
+
+To write without training, download my v1 checkpoint from the
+[v1.0.0 release](https://github.com/EliLevasseur/glm/releases/tag/v1.0.0).
+`glm_write` looks for numbered checkpoints in `checkpoints/` inside the folder
+you run it from, so run it from the repo folder, eityher download it from the relase or via terminal then test the models writing skills!:
+
+```bash
+curl -L --create-dirs -o checkpoints/2.ckpt https://github.com/EliLevasseur/glm/releases/download/v1.0.0/2.ckpt
+./build/glm_write 2 "Once upon a time, there was a little"
+```
 
 Write with the newest checkpoint, or pick one by number:
 
